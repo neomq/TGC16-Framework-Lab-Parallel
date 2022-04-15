@@ -15,6 +15,7 @@ router.get('/', async (req,res)=>{
     })
 })
 
+// CREATE
 // render form
 router.get('/create', async (req, res) => {
     const posterForm = createPosterForm();
@@ -22,7 +23,6 @@ router.get('/create', async (req, res) => {
         'form': posterForm.toHTML(bootstrapField)
     })
 })
-
 // process form
 router.post('/create', async(req,res)=>{
     const posterForm = createPosterForm();
@@ -46,6 +46,61 @@ router.post('/create', async(req,res)=>{
             })
         }
     })
+})
+
+// UPDATE
+router.get('/:poster_id/update', async (req, res) => {
+    // retrieve the product
+    const posterId = req.params.poster_id
+    const poster = await Posters.where({
+        'id': posterId
+    }).fetch({
+        require: true
+    });
+
+    const posterForm = createPosterForm();
+
+    // fill in the existing values
+    posterForm.fields.title.value = poster.get('title');
+    posterForm.fields.cost_cents.value = poster.get('cost_cents');
+    posterForm.fields.description.value = poster.get('description');
+    posterForm.fields.date.value = poster.get('date');
+    posterForm.fields.stock.value = poster.get('stock');
+    posterForm.fields.height_cm.value = poster.get('height_cm');
+    posterForm.fields.width_cm.value = poster.get('width_cm');
+
+    res.render('posters/update', {
+        'form': posterForm.toHTML(bootstrapField),
+        'poster': poster.toJSON()
+    })
+
+})
+
+// process update
+router.post('/:poster_id/update', async (req, res) => {
+    // fetch the product that we want to update
+    const poster = await Posters.where({
+        'id': req.params.poster_id
+    }).fetch({
+        require: true
+    });
+
+    // process the form
+    const posterForm = createPosterForm();
+    posterForm.handle(req, {
+        'success': async (form) => {
+            poster.set(form.data);
+            poster.save();
+            res.redirect('/posters');
+        },
+        'error': async (form) => {
+            res.render('posters/update', {
+                'form': form.toHTML(bootstrapField),
+                'poster': poster.toJSON()
+            })
+        }
+    })
+
 })
 
 module.exports = router;
