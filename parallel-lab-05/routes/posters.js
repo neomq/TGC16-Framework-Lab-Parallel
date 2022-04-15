@@ -73,7 +73,6 @@ router.get('/:poster_id/update', async (req, res) => {
         'form': posterForm.toHTML(bootstrapField),
         'poster': poster.toJSON()
     })
-
 })
 
 // process update
@@ -101,6 +100,33 @@ router.post('/:poster_id/update', async (req, res) => {
         }
     })
 
+})
+
+// DELETE
+router.get('/:poster_id/delete', async(req,res)=>{
+    // fetch the product that we want to delete
+    const poster = await Posters.where({
+        'id': req.params.poster_id
+    }).fetch({
+        require: true
+    });
+
+    res.render('posters/delete', {
+        'poster': poster.toJSON()
+    })
+
+});
+
+// process delete
+router.post('/:poster_id/delete', async(req,res)=>{
+    // fetch the product that we want to delete
+    const poster = await Posters.where({
+        'id': req.params.poster_id
+    }).fetch({
+        require: true
+    });
+    await poster.destroy();
+    res.redirect('/posters')
 })
 
 module.exports = router;
