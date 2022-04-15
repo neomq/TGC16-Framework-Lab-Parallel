@@ -23,17 +23,12 @@ app.use(
   })
 );
 
-// import in routes
-const landingRoutes = require('./routes/landing');
 
 async function main() {
     // Test Route
-    // app.get('/', (req,res)=>{
-    //     res.send("It's alive!")
-    // })
-  
-    app.use('/', landingRoutes);
-
+    app.get('/', (req,res)=>{
+        res.send("It's alive!")
+    })
 }
 
 main();
