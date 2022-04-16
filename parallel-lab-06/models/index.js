@@ -6,6 +6,9 @@ const Posters = bookshelf.model('Posters', {
     tableName:'posters',
     mediaproperty() {
         return this.belongsTo('MediaProperty')
+    },
+    tags() {
+        return this.belongsToMany('Tag');
     }
 });
 
@@ -16,4 +19,11 @@ const MediaProperty = bookshelf.model('MediaProperty',{
     }
 })
 
-module.exports = { Posters, MediaProperty };
+const Tag = bookshelf.model('Tag',{
+    tableName: 'tags',
+    posters() {
+        return this.belongsToMany('Posters')
+    }
+})
+
+module.exports = { Posters, MediaProperty, Tag };

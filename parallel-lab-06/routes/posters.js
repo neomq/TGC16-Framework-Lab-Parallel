@@ -3,7 +3,7 @@ const router = express.Router();
 
 
 // import in the models from the models module
-const { Posters, MediaProperty } = require('../models')
+const { Posters, MediaProperty, Tag } = require('../models')
 // import in the Forms
 const { bootstrapField, createPosterForm } = require('../forms');
 
@@ -14,10 +14,15 @@ async function getAllMediaProperties() {
     return allMediaProperties;
 }
 
+async function getAllTags() {
+    const allTags = await Tag.fetchAll().map( tag => [tag.get('id'), tag.get('name')]);
+    return allTags;
+}
+
 router.get('/', async (req,res)=>{
     // #2 - fetch all the products (ie, SELECT * from products)
     let posters = await Posters.collection().fetch({
-        withRelated:['mediaproperty']
+        withRelated:['mediaproperty', 'tags']
     });
     res.render('posters/index', {
         'posters': posters.toJSON() // #3 - convert collection to JSON
@@ -29,8 +34,9 @@ router.get('/', async (req,res)=>{
 router.get('/create', async (req, res) => {
 
     const allMediaProperties = await getAllMediaProperties();
+    const allTags = await getAllTags();
 
-    const posterForm = createPosterForm(allMediaProperties);
+    const posterForm = createPosterForm( allMediaProperties, allTags );
     res.render('posters/create',{
         'form': posterForm.toHTML(bootstrapField)
     })
@@ -39,11 +45,15 @@ router.get('/create', async (req, res) => {
 router.post('/create', async(req,res)=>{
     
     const allMediaProperties = await getAllMediaProperties();
+    const allTags = await getAllTags();
 
-    const posterForm = createPosterForm(allMediaProperties);
+    const posterForm = createPosterForm( allMediaProperties, allTags );
     posterForm.handle(req, {
         'success': async (form) => {
-            const poster = new Posters();
+
+            let {tags, ...posterData} = form.data;
+
+            const poster = new Posters(posterData);
 
             poster.set('id', form.data.id);
             poster.set('title', form.data.title);
@@ -56,6 +66,12 @@ router.post('/create', async(req,res)=>{
             poster.set('media_property_id', form.data.media_property_id);
 
             await poster.save();
+
+            // save the many to many relationship
+            if (tags) {
+                await poster.tags().attach(tags.split(","));
+            }
+
             res.redirect('/posters');
         },
         'error': async (form) => {
@@ -73,12 +89,14 @@ router.get('/:poster_id/update', async (req, res) => {
     const poster = await Posters.where({
         'id': posterId
     }).fetch({
-        require: true
+        require: true,
+        withRelated:['tags']
     });
 
     const allMediaProperties = await getAllMediaProperties();
+    const allTags = await getAllTags();
 
-    const posterForm = createPosterForm(allMediaProperties);
+    const posterForm = createPosterForm( allMediaProperties, allTags );
 
     // fill in the existing values
     posterForm.fields.title.value = poster.get('title');
@@ -90,6 +108,10 @@ router.get('/:poster_id/update', async (req, res) => {
     posterForm.fields.width_cm.value = poster.get('width_cm');
     posterForm.fields.media_property_id.value = poster.get('media_property_id');
 
+    // fill in the multi-select for the tags
+    let selectedTags = await poster.related('tags').pluck('id');
+    posterForm.fields.tags.value = selectedTags;
+
     res.render('posters/update', {
         'form': posterForm.toHTML(bootstrapField),
         'poster': poster
@@ -100,20 +122,35 @@ router.get('/:poster_id/update', async (req, res) => {
 router.post('/:poster_id/update', async (req, res) => {
 
     const allMediaProperties = await getAllMediaProperties();
+    const allTags = await getAllTags();
 
     // fetch the product that we want to update
     const poster = await Posters.where({
         'id': req.params.poster_id
     }).fetch({
-        require: true
+        require: true,
+        withRelated: ['tags']
     });
 
     // process the form
-    const posterForm = createPosterForm(allMediaProperties);
+    const posterForm = createPosterForm( allMediaProperties, allTags );
     posterForm.handle(req, {
         'success': async (form) => {
-            poster.set(form.data);
+            let { tags, ...posterData } = form.data;
+            poster.set(posterData);
             poster.save();
+
+            // update the tags
+            let tagIds = tags.split(',');
+            let existingTagIds = await poster.related('tags').pluck('id');
+
+            // remove all the tags that aren't selected anymore
+            let toRemove = existingTagIds.filter( id => tagIds.includes(id) === false);
+            await poster.tags().detach(toRemove);
+
+            // add in all the tags selected in the form
+            await poster.tags().attach(tagIds);
+
             res.redirect('/posters');
         },
         'error': async (form) => {
