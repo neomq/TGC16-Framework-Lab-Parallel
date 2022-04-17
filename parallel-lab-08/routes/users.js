@@ -37,10 +37,6 @@ router.post('/register', (req, res) => {
 
 // login page
 router.get('/login', (req, res) => {
-    res.render('users/login')
-})
-
-router.get('/login', (req, res) => {
     const loginForm = createLoginForm();
     res.render('users/login',{
         'form': loginForm.toHTML(bootstrapField)
