@@ -2,10 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 
-// import in the models from the models module
+// import in models from the models module
 const { Posters, MediaProperty, Tag } = require('../models')
-// import in the Forms
+// import in Forms
 const { bootstrapField, createPosterForm } = require('../forms');
+// import in CheckIfAuthenticated middleware
+const { checkIfAuthenticated } = require('../middlewares');
+
 
 async function getAllMediaProperties() {
     const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
@@ -31,7 +34,7 @@ router.get('/', async (req,res)=>{
 
 // CREATE
 // render form
-router.get('/create', async (req, res) => {
+router.get('/create', checkIfAuthenticated, async (req, res) => {
 
     const allMediaProperties = await getAllMediaProperties();
     const allTags = await getAllTags();
@@ -42,7 +45,7 @@ router.get('/create', async (req, res) => {
     })
 })
 // process form
-router.post('/create', async(req,res)=>{
+router.post('/create', checkIfAuthenticated, async(req,res)=>{
     
     const allMediaProperties = await getAllMediaProperties();
     const allTags = await getAllTags();
