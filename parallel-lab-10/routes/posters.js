@@ -84,7 +84,10 @@ router.post('/create', checkIfAuthenticated, async(req,res)=>{
         },
         'error': async (form) => {
             res.render('posters/create', {
-                'form': form.toHTML(bootstrapField)
+                'form': form.toHTML(bootstrapField),
+                cloudinaryName: process.env.CLOUDINARY_NAME,
+                cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+                cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
             })
         }
     })
@@ -124,7 +127,7 @@ router.get('/:poster_id/update', async (req, res) => {
 
     res.render('posters/update', {
         'form': posterForm.toHTML(bootstrapField),
-        'poster': poster,
+        'poster': poster.toJSON(),
         // 2 - send to the HBS file the cloudinary information
         cloudinaryName: process.env.CLOUDINARY_NAME,
         cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,

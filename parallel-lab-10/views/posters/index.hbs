@@ -6,6 +6,7 @@
         <tr>
             <th>ID</th>
             <th>Title</th>
+            <th>Image</th>
             <th>Media Property</th>
             <th>Tags</th>
             <th>Cost (cents)</th>
@@ -26,6 +27,11 @@
                 </td>
                 <td>
                     {{this.title}}
+                </td>
+                <td>
+                    {{#if this.image_url}}
+                        <img src="{{this.image_url}}" class="img-fluid"/>
+                    {{/if}}
                 </td>
                 <td>
                     {{this.mediaproperty.name}}
