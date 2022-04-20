@@ -1,0 +1,80 @@
+{{#extends 'base'}}
+
+{{#block 'content'}}
+
+{{!-- Search --}}
+<form method="GET">
+   {{{form}}}
+    <input type="submit" class="mb-3 mt-3 btn btn-primary" value="Search"/>
+</form>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Image</th>
+            <th>Media Property</th>
+            <th>Tags</th>
+            <th>Cost (cents)</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Stock</th>
+            <th>Height (cm)</th>
+            <th>Width (cm)</th>
+            <th></th>
+        </tr>
+
+    </thead>
+    <tbody>
+        {{#each posters}}
+            <tr>
+                <td>
+                    {{this.id}}
+                </td>
+                <td>
+                    {{this.title}}
+                </td>
+                <td>
+                    {{#if this.image_url}}
+                        <img src="{{this.image_url}}" class="img-fluid"/>
+                    {{/if}}
+                </td>
+                <td>
+                    {{this.mediaproperty.name}}
+                </td>
+                <td>
+                    {{#each this.tags}}
+                    <span class="badge bg-dark text-light">{{this.name}}</span>
+                    {{/each}}
+                </td>
+                <td>
+                    {{this.cost_cents}}
+                </td>
+                <td>
+                    {{this.description}}
+                </td>
+                <td>
+                    {{this.date}}
+                </td>
+                <td>
+                    {{this.stock}}
+                </td>
+                <td>
+                    {{this.height_cm}}
+                </td>
+                <td>
+                    {{this.width_cm}}
+                </td>
+                <td>
+                    <a class="btn btn-primary btn-sm" href="/posters/{{this.id}}/update">Update</a>
+                    <a class="btn btn-danger btn-sm" href="/posters/{{this.id}}/delete">Delete</a>
+                </td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{/block}}
+
+{{/extends}}
