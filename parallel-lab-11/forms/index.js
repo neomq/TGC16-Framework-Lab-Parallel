@@ -186,7 +186,7 @@ const createSearchForm = (media_properties, tags) => {
             'validators': [validators.integer()]
         }),
         'media_property_id': fields.string({
-            label: 'Category',
+            label: 'Media Property ',
             required: false,
             errorAfterField: true,
             cssClasses: {

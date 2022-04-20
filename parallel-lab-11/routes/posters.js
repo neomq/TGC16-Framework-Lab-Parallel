@@ -65,21 +65,26 @@ router.get('/', async (req, res) => {
         },
         'success': async (form) => {
             if (form.data.title) {
-                q = q.where('title', 'like', '%' + req.query.title + '%')
+                q = q.where('title', 'like', '%' + req.query.title + '%');
             }
-            if (form.data.media_property_id && form.data.media_property_id != "0") {
-                q = q.query('join', 'media_properties', 'media_property_id', 'media_properties.id')
-                    .where('media_properties.name', 'like', '%' + req.query.media_property + '%')
+            if (form.data.media_property_id) {
+                q = q.where('media_property_id', '=', form.data.media_property_id);
             }
             if (form.data.min_cost_cents) {
-                q = q.where('cost_cents', '>=', req.query.min_cost)
+                q = q.where('cost_cents', '>=', req.query.min_cost_cents);
             }
             if (form.data.max_cost_cents) {
-                q = q.where('cost_cents', '<=', req.query.max_cost);
+                q = q.where('cost_cents', '<=', req.query.max_cost_cents);
             }
             if (form.data.tags) {
-                q.query('join', 'posters_tags', 'posters.id', 'osters_id')
+                q.query('join', 'posters_tags', 'posters.id', 'poster_id')
                     .where('tag_id', 'in', form.data.tags.split(','))
+            }
+            if (form.data.height_cm) {
+                q = q.where('height_cm', '=', req.query.height_cm)
+            }
+            if (form.data.width_cm) {
+                q = q.where('width_cm', '=', req.query.width_cm)
             }
             let posters = await q.fetch({
                 withRelated: ['mediaproperty', 'tags']
