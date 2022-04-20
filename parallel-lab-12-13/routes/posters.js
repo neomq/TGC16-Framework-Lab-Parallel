@@ -1,15 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-// import in models from the models module
-const { Posters } = require('../models')
 // import in Forms
 const { bootstrapField, createPosterForm, createSearchForm } = require('../forms');
 // import in CheckIfAuthenticated middleware
 const { checkIfAuthenticated } = require('../middlewares');
 
 // import in the DAL
-const dataLayer = require('../dal/products')
+const dataLayer = require('../dal/PosterServices')
 
 
 // router.get('/', async (req,res)=>{
