@@ -80,11 +80,17 @@ router.get('/', async (req, res) => {
                 q.query('join', 'posters_tags', 'posters.id', 'poster_id')
                     .where('tag_id', 'in', form.data.tags.split(','))
             }
-            if (form.data.height_cm) {
-                q = q.where('height_cm', '=', req.query.height_cm)
+            if (form.data.min_height_cm) {
+                q = q.where('height_cm', '>=', req.query.min_height_cm)
             }
-            if (form.data.width_cm) {
-                q = q.where('width_cm', '=', req.query.width_cm)
+            if (form.data.max_height_cm) {
+                q = q.where('height_cm', '<=', req.query.max_height_cm)
+            }
+            if (form.data.min_width_cm) {
+                q = q.where('width_cm', '>=', req.query.min_width_cm)
+            }
+            if (form.data.max_width_cm) {
+                q = q.where('width_cm', '<=', req.query.max_width_cm)
             }
             let posters = await q.fetch({
                 withRelated: ['mediaproperty', 'tags']

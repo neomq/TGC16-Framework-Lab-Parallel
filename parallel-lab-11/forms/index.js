@@ -175,7 +175,7 @@ const createSearchForm = (media_properties, tags) => {
             cssClasses: {
                 label: ['form-label']
             },
-            'validators': [validators.integer()]
+            'validators': [validators.integer(), validators.min(0)]
         }),
           'max_cost_cents': fields.string({
             required: false,
@@ -183,7 +183,7 @@ const createSearchForm = (media_properties, tags) => {
             cssClasses: {
                 label: ['form-label']
             },
-            'validators': [validators.integer()]
+            'validators': [validators.integer(), validators.min(0)]
         }),
         'media_property_id': fields.string({
             label: 'Media Property ',
@@ -204,21 +204,37 @@ const createSearchForm = (media_properties, tags) => {
             widget: widgets.multipleSelect(),
             choices: tags
         }),
-        'height_cm': fields.string({
+        'min_height_cm': fields.string({
             required: false,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
             },
-            'validators': [validators.integer()]
+            'validators': [validators.integer(), validators.min(0)]
         }),
-        'width_cm': fields.string({
+        'max_height_cm': fields.string({
             required: false,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
             },
-            'validators': [validators.integer()]
+            'validators': [validators.integer(), validators.min(0)]
+        }),
+        'min_width_cm': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer(), validators.min(0)]
+        }),
+        'max_width_cm': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer(), validators.min(0)]
         })
     })
 }
