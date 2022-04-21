@@ -6,6 +6,7 @@ const CartServices = require('../services/cart_services');
 router.get('/', async(req,res)=>{
     let cart = new CartServices(req.session.user.id);
     let shoppingCart = (await cart.getCart()).toJSON();
+    console.log(shoppingCart)
     res.render('cart/index', {
         'shoppingCart': shoppingCart
     })
@@ -29,8 +30,9 @@ router.post('/:poster_id/quantity/update', async(req,res)=>{
     let cart = new CartServices(req.session.user.id);
     await cart.setQuantity(req.params.poster_id, req.body.newQuantity);
     
-    console.log(req.params.poster_id)
-    console.log(req.body.newQuantity)
+    // console.log(cart)
+   // console.log(req.params.poster_id)
+   // console.log(req.body.newQuantity)
     
     req.flash("success_messages", "Quantity updated")
     res.redirect('/cart');

@@ -32,7 +32,7 @@ const User = bookshelf.model('User',{
 
 const CartItem = bookshelf.model('CartItem', {
     tableName: 'cart_items',
-    posters() {
+    cartposter() {
         return this.belongsTo('Posters')
     }
 })

@@ -6,7 +6,7 @@ const getCart = async (userId) => {
             'user_id': userId
         }).fetch({
             require: false,
-            withRelated: ['posters', 'posters.mediaproperty']
+            withRelated: ['cartposter', 'cartposter.mediaproperty']
         });
 }
 
@@ -18,7 +18,6 @@ const getCartItemByUserAndProduct = async (userId, posterId) => {
         require: false
     });
 }
-
 
 async function createCartItem(userId, posterId, quantity) {
     let cartItem = new CartItem({
@@ -41,6 +40,8 @@ async function removeFromCart(userId, posterId) {
 
 async function updateQuantity(userId, posterId, newQuantity) {
     let cartItem = await getCartItemByUserAndProduct(userId, posterId);
+
+    // console.log('poster id: ', posterId)
     if (cartItem) {
         cartItem.set('quantity', newQuantity);
         cartItem.save();
